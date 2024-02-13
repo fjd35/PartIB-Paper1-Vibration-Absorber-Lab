@@ -29,7 +29,7 @@ def MLKF_2dof(m1, l1, k1, f1, m2, l2, k2, f2):
 
     return M, L, K, F
 
-def MLKF_3dof(m1, l1, k1, f1, m2, l2, k2, f2, m3, l3, k3, f3):
+def MLKF_3_storey(m1, l1, k1, f1, m2, l2, k2, f2, m3, l3, k3, f3):
     """Return mass, damping, stiffness & force matrices for 3DOF system"""
     M = np.array([
         [m1, 0, 0],
@@ -50,7 +50,7 @@ def MLKF_3dof(m1, l1, k1, f1, m2, l2, k2, f2, m3, l3, k3, f3):
 
     return M, L, K, F
 
-def MLKF_4dof(m1, l1, k1, f1, m2, l2, k2, f2, m3, l3, k3, f3, m4, l4, k4, f4):
+def MLKF_3_storey_1st_floor_damped(m1, l1, k1, f1, m2, l2, k2, f2, m3, l3, k3, f3, m4, l4, k4, f4):
     """Return mass, damping, stiffness & force matrices for 4DOF system.
     3-floor building with damper on first floor"""
     M = np.array([
@@ -72,6 +72,88 @@ def MLKF_4dof(m1, l1, k1, f1, m2, l2, k2, f2, m3, l3, k3, f3, m4, l4, k4, f4):
         [-k4, 0, 0, k4]
     ])
     F = np.array([f1, f2, f3, f4])
+
+    return M, L, K, F
+
+def MLKF_3_storey_2nd_floor_damped(m1, l1, k1, f1, m2, l2, k2, f2, m3, l3, k3, f3, m5, l5, k5, f5):
+    """Return mass, damping, stiffness & force matrices for 4DOF system.
+    3-floor building with damper on first floor"""
+    M = np.array([
+        [m1, 0, 0, 0],
+        [0, m2, 0, 0],
+        [0, 0, m3, 0],
+        [0, 0, 0, m5]
+    ])
+    L = np.array([
+        [l1+l2, -l2, 0, 0],
+        [-l2, l3+l2+l5, -l3, -l5],
+        [0, -l3, l3, 0],
+        [0, -l5, 0, l5]
+    ])
+    K = np.array([
+        [k1+k2, -k2, 0, 0],
+        [-k2, k3+k2+k5, -k3, -k5],
+        [0, -k3, k3, 0],
+        [0, -k5, 0, k5]
+    ])
+    F = np.array([f1, f2, f3, f5])
+
+    return M, L, K, F
+
+def MLKF_3_storey_3rd_floor_damped(m1, l1, k1, f1, m2, l2, k2, f2, m3, l3, k3, f3, m6, l6, k6, f6):
+    """Return mass, damping, stiffness & force matrices for 4DOF system.
+    3-floor building with damper on first floor"""
+    M = np.array([
+        [m1, 0, 0, 0],
+        [0, m2, 0, 0],
+        [0, 0, m3, 0],
+        [0, 0, 0, m6]
+    ])
+    L = np.array([
+        [l1+l2, -l2, 0, 0],
+        [-l2, l3+l2, -l3, 0],
+        [0, -l3, l3+l6, -l6],
+        [0, 0, -l6, l6]
+    ])
+    K = np.array([
+        [k1+k2, -k2, 0, 0],
+        [-k2, k3+k2, -k3, 0],
+        [0, -k3, k3+k6, -k6],
+        [0, 0, -k6, k6]
+    ])
+    F = np.array([f1, f2, f3, f6])
+
+    return M, L, K, F
+
+def MLKF_3_storey_all_floors_damped(m1, l1, k1, f1, m2, l2, k2, f2, m3, l3, k3, f3, m4, l4, k4, f4,
+                                    m5, l5, k5, f5, m6, l6, k6, f6):
+    """Return mass, damping, stiffness & force matrices for 4DOF system.
+    3-floor building with damper on first floor"""
+    M = np.array([
+        [m1, 0, 0, 0, 0, 0],
+        [0, m2, 0, 0, 0, 0],
+        [0, 0, m3, 0, 0, 0],
+        [0, 0, 0, m4, 0, 0],
+        [0, 0, 0, 0, m5, 0],
+        [0, 0, 0, 0, 0, m6]
+    ])
+    L = np.array([
+        [l1+l2+l4, -l2, 0, -l4, 0, 0],
+        [-l2, l3+l2+l5, -l3, 0, -l5, 0],
+        [0, -l3, l3+l6, 0, 0, -l6],
+        [-l4, 0, 0, l4, 0, 0],
+        [0, -l5, 0, 0, l5, 0],
+        [0, 0, -l6, 0, 0, l6]
+    ])
+    K = np.array([
+        [k1+k2+k4, -k2, 0, -k4, 0, 0],
+        [-k2, k3+k2+k5, -k3, 0, -k5, 0],
+        [0, -k3, k3+k6, 0, 0, -k6],
+        [-k4, 0, 0, k4, 0, 0],
+        [0, -k5, 0, 0, k5, 0],
+        [0, 0, -k6, 0, 0, k6]
+    ])
+    F = np.array([f1, f2, f3, f4, f5, f6])
 
     return M, L, K, F
 
@@ -224,6 +306,16 @@ def arg_parser():
     ap.add_argument('--k4', type=float, default=106.8, help='Spring 4')
     ap.add_argument('--f4', type=float, default=0, help='Force 4')
 
+    ap.add_argument('--m5', type=float, default=None, help='Mass 5')
+    ap.add_argument('--l5', type=float, default=1, help='Damping 5')
+    ap.add_argument('--k5', type=float, default=106.8, help='Spring 5')
+    ap.add_argument('--f5', type=float, default=0, help='Force 5')
+
+    ap.add_argument('--m6', type=float, default=None, help='Mass 6')
+    ap.add_argument('--l6', type=float, default=1, help='Damping 6')
+    ap.add_argument('--k6', type=float, default=106.8, help='Spring 6')
+    ap.add_argument('--f6', type=float, default=0, help='Force 6')
+
     ap.add_argument(
         '--hz', type=float, nargs=2, default=(0, 5),
         help='Frequency range'
@@ -266,17 +358,26 @@ def main():
             args.m2, args.l2, args.k2, args.f2
         )
     elif args.m4 is None:
-        M, L, K, F = MLKF_3dof(
+        M, L, K, F = MLKF_3_storey(
             args.m1, args.l1, args.k1, args.f1,
             args.m2, args.l2, args.k2, args.f2,
             args.m3, args.l3, args.k3, args.f3
         )
-    else:
-        M, L, K, F = MLKF_4dof(
+    elif args.m5 is None:
+        M, L, K, F = MLKF_3_storey_1st_floor_damped(
             args.m1, args.l1, args.k1, args.f1,
             args.m2, args.l2, args.k2, args.f2,
             args.m3, args.l3, args.k3, args.f3,
             args.m4, args.l4, args.k4, args.f4
+        )
+    else:
+        M, L, K, F = MLKF_3_storey_all_floors_damped(
+            args.m1, args.l1, args.k1, args.f1,
+            args.m2, args.l2, args.k2, args.f2,
+            args.m3, args.l3, args.k3, args.f3,
+            args.m4, args.l4, args.k4, args.f4,
+            args.m5, args.l5, args.k5, args.f5,
+            args.m6, args.l6, args.k6, args.f6
         )
 
     # Generate frequency and time arrays
